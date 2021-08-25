@@ -23,12 +23,12 @@ async def main():
     async with TraceMoe() as tracemoe:
 
         # Search by image URL
-        result: dict = await tracemoe.search('https://XXX/XXX.jpg')
-        print(result)
+        results: list = await tracemoe.search('https://XXX/XXX.jpg')
+        print(results)
 
         # Search by image upload
-        result: dict = await tracemoe.search(open('/home/ichbinleoon/XXX.jpg', 'rb'))
-        print(result)
+        results: list = await tracemoe.search(open('/home/ichbinleoon/XXX.jpg', 'rb'))
+        print(results)
 
         # Get account info
         info: dict = await tracemoe.me()
@@ -52,16 +52,16 @@ async def main():
     tracemoe = TraceMoe(api_key='Your API key')
 
     # Cut black borders
-    result: dict = await tracemoe.search('https://XXX/XXX.jpg', cut_borders=True)
-    print(result)
+    results: list = await tracemoe.search('https://XXX/XXX.jpg', cut_borders=True)
+    print(results)
 
     # Filter by AniList ID
-    result: dict = await tracemoe.search('https://XXX/XXX.jpg', anilist_id=11617)
-    print(result)
+    results: list = await tracemoe.search('https://XXX/XXX.jpg', anilist_id=11617)
+    print(results)
 
     # Include AniList info
-    result: dict = await tracemoe.search('https://XXX/XXX.jpg', anilist_info=True)
-    print(result)
+    results: list = await tracemoe.search('https://XXX/XXX.jpg', anilist_info=True)
+    print(results)
     
     await tracemoe.close()
 

@@ -23,14 +23,14 @@ SOFTWARE.
 """
 
 import logging
-from typing import TypeVar, Optional, Dict, Any, Union, BinaryIO
+from typing import TypeVar, Optional, Dict, Any, Union, BinaryIO, List
 from urllib.parse import urljoin
 
 import aiohttp
 from aiohttp import ContentTypeError
 
 __author__ = 'IchBinLeoon'
-__version__ = '1.0.0'
+__version__ = '1.0.1'
 
 log = logging.getLogger(__name__)
 
@@ -167,7 +167,7 @@ class TraceMoe:
             cut_borders: Optional[bool] = False,
             anilist_id: Optional[int] = None,
             anilist_info: Optional[bool] = False,
-    ) -> Dict[str, Any]:
+    ) -> List[Dict[str, Any]]:
         """Searches the scene the anime screenshot is from by URL or upload.
 
         Args:
@@ -177,7 +177,7 @@ class TraceMoe:
             anilist_info(bool, optional): Include AniList info.
 
         Returns:
-            dict: The search result.
+            list: The search results.
         """
         params = {}
         data = None
@@ -201,7 +201,7 @@ class TraceMoe:
 
         url = urljoin(BASE_URL, 'search')
         data = await self._request(method, url=url, params=params, headers=headers, data=data)
-        return data
+        return data.get('result')
 
     async def me(self) -> Dict[str, Any]:
         """Checks the search quota and limit for your account (with API key) or IP address (without API key).
