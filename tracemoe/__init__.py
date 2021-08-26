@@ -23,18 +23,16 @@ SOFTWARE.
 """
 
 import logging
-from typing import TypeVar, Optional, Dict, Any, Union, BinaryIO, List
+from typing import Optional, Dict, Any, Union, BinaryIO, List
 from urllib.parse import urljoin
 
 import aiohttp
 from aiohttp import ContentTypeError
 
 __author__ = 'IchBinLeoon'
-__version__ = '1.0.1'
+__version__ = '1.0.2'
 
 log = logging.getLogger(__name__)
-
-TraceMoeT = TypeVar('TraceMoeT', bound='TraceMoe')
 
 BASE_URL = 'https://api.trace.moe/'
 
@@ -108,13 +106,13 @@ class TraceMoe:
         """Initializes the trace.moe wrapper client.
 
         Args:
-            session (aiohttp.ClientSession, optional): An aiohttp session.
-            api_key (str, optional): A trace.moe API key.
+            session: An aiohttp session.
+            api_key: A trace.moe API key.
         """
         self.session = session
         self.api_key = api_key
 
-    async def __aenter__(self) -> TraceMoeT:
+    async def __aenter__(self) -> 'TraceMoe':
         return self
 
     async def __aexit__(self, exc_type: Any, exc: Any, tb: Any) -> None:
@@ -126,28 +124,13 @@ class TraceMoe:
             await self.session.close()
 
     async def _session(self) -> aiohttp.ClientSession:
-        """Gets an aiohttp session by creating it if it does not already exist.
-
-        Returns:
-            aiohttp.ClientSession: An aiohttp session.
-        """
+        """Gets an aiohttp session by creating it if it does not already exist."""
         if self.session is None:
             self.session = aiohttp.ClientSession()
         return self.session
 
     async def _request(self, method: str, *args, **kwargs) -> Dict[str, Any]:
-        """
-        Performs an HTTP request.
-
-        Args:
-            method (str): The request method.
-
-        Returns:
-            dict: The response json.
-
-        Raises:
-            TraceMoeException: If the response contains an error.
-        """
+        """Performs an HTTP request."""
         session = await self._session()
         response = await getattr(session, method)(*args, **kwargs)
         log.debug(f'{response.method} {response.url} {response.status} {response.reason}')
@@ -171,13 +154,16 @@ class TraceMoe:
         """Searches the scene the anime screenshot is from by URL or upload.
 
         Args:
-            image(str, BinaryIO): The URL or file of the anime screenshot.
-            cut_borders(bool, optional): Cut black borders.
-            anilist_id(int, optional): Filter by AniList ID.
-            anilist_info(bool, optional): Include AniList info.
+            image: The URL or file of the anime screenshot.
+            cut_borders: Cut black borders.
+            anilist_id: Filter by AniList ID.
+            anilist_info: Include AniList info.
 
         Returns:
-            list: The search results.
+            The search results.
+
+        Raises:
+            TraceMoeException: If the API response contains an error.
         """
         params = {}
         data = None
@@ -207,7 +193,10 @@ class TraceMoe:
         """Checks the search quota and limit for your account (with API key) or IP address (without API key).
 
         Returns:
-            dict: The info about your account or IP address.
+            The info about your account or IP address.
+
+        Raises:
+            TraceMoeException: If the API response contains an error.
         """
         url = urljoin(BASE_URL, 'me')
         data = await self._request('get', url=url)
