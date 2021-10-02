@@ -30,7 +30,7 @@ import aiohttp
 from aiohttp import ContentTypeError
 
 __author__ = 'IchBinLeoon'
-__version__ = '1.0.2'
+__version__ = '1.0.3'
 
 log = logging.getLogger(__name__)
 
@@ -132,7 +132,8 @@ class TraceMoe:
     async def _request(self, method: str, *args, **kwargs) -> Dict[str, Any]:
         """Performs an HTTP request."""
         session = await self._session()
-        response = await getattr(session, method)(*args, **kwargs)
+        headers = {'x-trace-key': self.api_key} if self.api_key is not None else None
+        response = await getattr(session, method)(headers=headers, *args, **kwargs)
         log.debug(f'{response.method} {response.url} {response.status} {response.reason}')
         if response.status != 200:
             exception = _exceptions[response.status]
@@ -182,11 +183,10 @@ class TraceMoe:
         if anilist_info is True:
             params['anilistInfo'] = ''
 
-        headers = {'x-trace-key': self.api_key} if self.api_key else None
         method = 'get' if data is None else 'post'
 
         url = urljoin(BASE_URL, 'search')
-        data = await self._request(method, url=url, params=params, headers=headers, data=data)
+        data = await self._request(method, url=url, params=params, data=data)
         return data.get('result')
 
     async def me(self) -> Dict[str, Any]:
